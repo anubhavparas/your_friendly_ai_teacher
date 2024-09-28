@@ -3,6 +3,8 @@ from typing import List
 from xml.sax.handler import all_properties
 from custom_types import VideoInstructionGeneration
 from text2vid.text2video import Text2Video
+import copy
+import time
 
 class Instruction2Video:
     def __init__(self) -> None:
@@ -22,29 +24,26 @@ class Instruction2Video:
     
     async def aggregate_result(self):
         all_processed = False
-        self.url_results = []
-
+        start_t = time.time()
         while not all_processed:
-            all_processed = True  # Assume all are processed unless proven otherwise
-            to_remove = []  # List to keep track of indices to remove
-
-            for i, generation in enumerate(self.all_generations):
-                generation_id = generation.id
+            processed_idx = []
+            for i, _ in enumerate(self.all_generations):
+                generation_id = self.all_generations[i].id
                 status, result = await self.vid_gen.get_result(generation_id=generation_id)
-
                 if status == 'completed':
                     print(f"Generated for {result.tutorial_instruction}")
-                    self.url_results.append(result)
-                    to_remove.append(i)  # Mark index for removal
-                else:
-                    all_processed = False  # Set to False if any are not completed
+                    self.all_generations[i] = result  # Store completed results
+                    processed_idx.append(i)
 
-            # Remove completed generations after processing the current batch
-            for index in reversed(to_remove):  # Remove in reverse to avoid index shifting
-                del self.all_generations[index]
-
-        self.all_generations = self.url_results
+                if len(processed_idx) == len(self.all_generations):
+                    all_processed = True
+            current_t = time.time()
+            elapsed_time = current_t - start_t 
+            if elapsed_time > 3 * 60:
+                print(elapsed_time)
+                break
         print("Got results for all instructions...")
+
         
 
 
