@@ -77,19 +77,24 @@ def render_tutorial_instructions(
     
     gpt_instructions_generator = InstructionGenerator()
 
+    video_instructions = None
     with st.spinner("Hmmm! Let me think how can I help you... :thinking_face:"):
     
-        tutorial_instructions = get_tutorial_instructions(
-            gpt_instructions_generator=gpt_instructions_generator,
-            role=role, 
-            task_query=task_query, 
-            image_inp=image_inp
-        )
-        video_instructions = get_videos_from_instructions(tutorial_instructions)
+        try:
+            tutorial_instructions = get_tutorial_instructions(
+                gpt_instructions_generator=gpt_instructions_generator,
+                role=role, 
+                task_query=task_query, 
+                image_inp=image_inp
+            )
+            video_instructions = get_videos_from_instructions(tutorial_instructions)
+        except Exception as e:
+            st.error(f"Sorry, something went wrong. Please try again. {e}", icon="🚨")
 
-    for step, video_instruction in enumerate(video_instructions):
-        st.write(f"{step + 1}. {video_instruction.tutorial_instruction}")
-        st.video(video_instruction.url)
+    if video_instructions is not None:
+        for step, video_instruction in enumerate(video_instructions):
+            st.write(f"{step + 1}. {video_instruction.tutorial_instruction}")
+            st.video(video_instruction.url)
 
          
 
