@@ -20,11 +20,14 @@ class InstructionGenerator:
         # add prompts suggestions
         code_suggestions = ", just return the steps in python list" + ", remove python code block fence" + ", remove variable name" + ", remove list number" + ", reduce the size of list as much as possible"
 
-        query_suggestions = ", use entire word limit" + ", be as descriptive as possible related to the task" # + ", add some description of task to each step"
+        query_suggestions = ", use entire word limit" + ", be as descriptive as possible related to the task"
+        
+        import random
+        tone = random.choice(['encouraging', 'patient', 'humorous', 'sarcastic', 'academic', 'friendly', 'authoritative', 'motivational', 'technical', 'conversational'])
 
         # Construct the messages for the chat completion
         content_role = f"You are a {role}"
-        content_prompt = f"Return a list of steps for task: {task_query}, with word limit {word_limit} for each step" + code_suggestions + query_suggestions
+        content_prompt = f"Return a list of steps for task: {task_query}, in {tone}, with word limit {word_limit} for each step" + code_suggestions + query_suggestions
         print ("content_prompt: ", content_prompt)
 
         try:
