@@ -94,7 +94,11 @@ def render_tutorial_instructions(
     if video_instructions is not None:
         for step, video_instruction in enumerate(video_instructions):
             st.write(f"{step + 1}. {video_instruction.tutorial_instruction}")
-            st.video(video_instruction.url)
+            if video_instruction.url is not None:    
+                st.video(video_instruction.url)
+            else: 
+                st.warn("Can you imagine this instruction? :thinking_face:")
+
 
          
 
