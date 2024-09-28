@@ -14,13 +14,22 @@ class InstructionGenerator:
     def get_instructions(self,
                          task_query: Optional[str] = None,
                          role: Optional[str] = None,
-                         word_limit: int = 20,
+                         word_limit: int = 40,
                          model: str = "gpt-4",
                          n_steps: int = 5
                         ) -> Optional[List[str]]:
+        # add prompts suggestions
+        code_suggestions = ", just return the steps in python list" + ", remove python code block fence" + ", remove variable name" + ", remove list number" + ", reduce the size of list as much as possible"
+
+        query_suggestions = ", use entire word limit" + ", be as descriptive as possible related to the task"
+        
+        import random
+        tone = random.choice(['encouraging', 'patient', 'humorous', 'sarcastic', 'academic', 'friendly', 'authoritative', 'motivational', 'technical', 'conversational'])
+
         # Construct the messages for the chat completion
         content_role = f"You are a {role}"
-        content_prompt = f"Return a list of {n_steps} steps on {task_query}, just return the steps in python list with word limit {word_limit}, remove python code block fence, remove variable name, remove list number"
+        content_prompt = f"Return a list of {n_steps} steps for task: {task_query}, in {tone}, with word limit {word_limit} for each step" + code_suggestions + query_suggestions
+        print ("content_prompt: ", content_prompt)
 
         try:
             # Create a chat completion
@@ -35,7 +44,10 @@ class InstructionGenerator:
 
             # Convert the string response to an actual Python list
             python_list = ast.literal_eval(response_content)
-            return python_list
+
+             # Append the task query (prompt) to each list item
+            modified_list = [f"{item} for {task_query}" for item in python_list]
+            return modified_list
 
         except Exception as e:
             print(f"An error occurred: {e}")

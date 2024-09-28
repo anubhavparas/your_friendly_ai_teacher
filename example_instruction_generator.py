@@ -5,9 +5,9 @@ from instruction_generator import InstructionGenerator
 instruction_generator = InstructionGenerator()
 
 # Generate instructions with a task_query
-task_query = "how to conduct a litmus test on lemon juice"
-role = "science tutor"
-instructions = instruction_generator.get_instructions(task_query=task_query, role=role, word_limit=10)
+task_query = "making pizza"
+role = "pizza chef"
+instructions = instruction_generator.get_instructions(task_query=task_query, role=role, word_limit=20)
 
 # Display the result
-print(instructions)
+print("\n", instructions)
