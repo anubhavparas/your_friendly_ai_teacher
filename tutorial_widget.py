@@ -5,9 +5,10 @@ from dataclasses import dataclass
 
 from custom_types import VideoInstructionGeneration
 from instruction_generator import InstructionGenerator
+from text2vid.instruction2video import Instruction2Video
 
 
-def render_input_form(teacher_type: str, sample_question: str) -> None:
+async def render_input_form(teacher_type: str, sample_question: str) -> None:
      """
      Renders the widget to get the input.
      :param teacher_type: to define the type of AI teacher.
@@ -21,7 +22,7 @@ def render_input_form(teacher_type: str, sample_question: str) -> None:
 
         submitted = st.form_submit_button("Go!")
         if submitted:
-            render_tutorial_instructions(
+            await render_tutorial_instructions(
             role=role,
             task_query=user_query,
         )
@@ -38,15 +39,17 @@ def call_llm(
 
 
 
-def get_videos_from_instructions(tutorial_instructions: List[str]) -> List[VideoInstructionGeneration]:
+async def get_videos_from_instructions(tutorial_instructions: List[str]) -> List[VideoInstructionGeneration]:
     """
     Call Luma AI API to get the generated.
     :param tutorial_instructions: text instructions for the task to be learnt.
     """
     # TODO (sakshi): Integrate the call to get the generated video.
-    dummy_instruction = VideoInstructionGeneration(id="1", url="https://storage.cdn-luma.com/lit_lite_inference_v1.6-xl/f3e0893e-9f22-42bb-87ef-30f0a78642f1/46f24df2-c6e8-42df-aead-9a4058e406df_video0d8e5285574c94fcc88e8c929964805de.mp4", tutorial_instruction="A teddy bear in sunglasses playing electric guitar and dancing")
-    
-    return [dummy_instruction, dummy_instruction, dummy_instruction]
+    video_gen = Instruction2Video()
+    await video_gen.process_instructions(tutorial_instructions)
+    await video_gen.aggregate_result()
+    generations = video_gen.all_generations    
+    return generations
 
 
 
@@ -63,7 +66,7 @@ def get_tutorial_instructions(
 
 
 
-def render_tutorial_instructions(
+async def render_tutorial_instructions(
         role: str, 
         task_query: str, 
         image_inp: Optional[np.ndarray] = None
@@ -87,7 +90,9 @@ def render_tutorial_instructions(
                 task_query=task_query, 
                 image_inp=image_inp
             )
-            video_instructions = get_videos_from_instructions(tutorial_instructions)
+            print(f"Text instructions generated : {len(tutorial_instructions)}!")
+            video_instructions = await get_videos_from_instructions(tutorial_instructions[:2])
+            print(f"Video instructions generated!")
         except Exception as e:
             st.error(f"Sorry, something went wrong. Please try again. {e}", icon="🚨")
 
@@ -97,7 +102,7 @@ def render_tutorial_instructions(
             if video_instruction.url is not None:    
                 st.video(video_instruction.url)
             else: 
-                st.warn("Can you imagine this instruction? :thinking_face:")
+                st.warning("Can you imagine this instruction? :thinking_face:")
 
 
          

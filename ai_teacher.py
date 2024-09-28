@@ -3,7 +3,7 @@ import time
 from teach_science import render_science_teacher
 from teach_art import render_art_teacher
 from teach_cooking import render_cooking_teacher
-
+import asyncio
 
 
 from constants import (
@@ -28,7 +28,7 @@ TEACHERS = {
     COOKING_TEACHER: render_cooking_teacher,
 }
 
-def run_app() -> None:
+async def run_app() -> None:
     """
     Launches the app.
     """
@@ -42,15 +42,17 @@ def run_app() -> None:
     )
 
     with science_teacher:
-        render_science_teacher()
+        await render_science_teacher()
     
     with art_teacher:
-        render_art_teacher()
+        await render_art_teacher()
     
     with cooking_teacher:
-        render_cooking_teacher()
+        await render_cooking_teacher()
 
-    
-    
+
+
+# Running the main function
 if __name__ == "__main__":
-    run_app()
+    asyncio.run(run_app()
+)
