@@ -15,11 +15,12 @@ class InstructionGenerator:
                          task_query: Optional[str] = None,
                          role: Optional[str] = None,
                          word_limit: int = 20,
-                         model: str = "gpt-4"
+                         model: str = "gpt-4",
+                         n_steps: int = 5
                         ) -> Optional[List[str]]:
         # Construct the messages for the chat completion
         content_role = f"You are a {role}"
-        content_prompt = f"Return a list of steps on {task_query}, just return the steps in python list with word limit {word_limit}, remove python code block fence, remove variable name, remove list number"
+        content_prompt = f"Return a list of {n_steps} steps on {task_query}, just return the steps in python list with word limit {word_limit}, remove python code block fence, remove variable name, remove list number"
 
         try:
             # Create a chat completion
