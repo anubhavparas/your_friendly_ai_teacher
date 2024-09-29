@@ -91,7 +91,7 @@ async def render_tutorial_instructions(
                 image_inp=image_inp
             )
             print(f"Text instructions generated : {len(tutorial_instructions)}!")
-            video_instructions = await get_videos_from_instructions(tutorial_instructions[:2])
+            video_instructions = await get_videos_from_instructions(tutorial_instructions)
             print(f"Video instructions generated!")
         except Exception as e:
             st.error(f"Sorry, something went wrong. Please try again. {e}", icon="🚨")

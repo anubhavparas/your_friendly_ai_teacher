@@ -25,13 +25,17 @@ class Instruction2Video:
     async def aggregate_result(self):
         all_processed = False
         start_t = time.time()
+        processed = set()
         while not all_processed:
             processed_idx = []
             for i, _ in enumerate(self.all_generations):
                 generation_id = self.all_generations[i].id
                 status, result = await self.vid_gen.get_result(generation_id=generation_id)
                 if status == 'completed':
+                    if i in processed:
+                        continue
                     print(f"Generated for {result.tutorial_instruction}")
+                    processed.add(i)
                     self.all_generations[i] = result  # Store completed results
                     processed_idx.append(i)
 
